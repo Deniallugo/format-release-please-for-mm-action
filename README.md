@@ -2,22 +2,23 @@
 
 Format output from Release Please and send it to MatterMost
 
-## Inputs
-
-### `release-please-output`
+## ENV 
+### `RELEASE_PLEASE_OUTPUT`
 **REQUEIRED**  Release please output
 
-### `MATTERMOST_WEBHOOK_URL`
+## Inputs
+
+### `mattermost-url`
 **REQUIRED**  The Mattermost Incoming Webhook
 
-### `MATTERMOST_CHANNEL`
+### `mattermost-channel`
 The name of the channel you want to post, by default will post in the channel that was setup in the webhook creation
   
-### `MATTERMOST_USERNAME`
+### `mattermost-username`
 The name of the sender of the message. ie, "GitHubAction"
   
   
-### `MATTERMOST_ICON`
+### `mattermost-icon`
 User/Bot icon shown with Mattermost message
 
 ## Example usage
@@ -25,6 +26,6 @@ User/Bot icon shown with Mattermost message
 ```yaml
 uses: Deniallugo/format-release-for-mm-action@v1.0
 with:
-  release-please-output: ${{ toJSON(steps.release.outputs) }}
-  MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK }}
+  release-please-output: ${{ steps.release.outputs }}
+  mattermost-url: ${{ secrets.MATTERMOST_WEBHOOK }}
 ```
