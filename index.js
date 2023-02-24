@@ -1,24 +1,26 @@
 const core = require('@actions/core');
+const axios = require('axios');
 
 try {
-    const payload = core.getInput('release-please-output');
-    if (!payload) {
-        console.log("Empty payload");
-        return;
+    let payload = core.getInput('release-please-output');
+    if (payload == "") {
+        throw Error("Empty output");
     }
-    const mm_webhook = core.getInput('MATTERMOST_WEBHOOK_URL');
+
+    payload = JSON.parse(payload);
+    const mm_webhook = core.getInput('mattermost-url');
     if (mm_webhook == "") {
-        console.log("MATTERMOST_WEBHOOK_URL is empty");
-        return;
+        throw Error("mattermost-url is empty");
     } 
-    const channel = core.getInput('MATTERMOST_CHANNEL');
-    const username = core.getInput('MATTERMOST_USERNAME');
-    const icon = core.getInput('MATTERMOST_ICON');
+    
+    const channel = core.getInput('mattermost-channel');
+    const username = core.getInput('mattermost-username');
+    const icon = core.getInput('mattermost-icon');
 
 
     const releases = preparePayload(payload);
-    const text = releases.join(" \n ");
-    sendMessage(text, webhook, icon, username, channel);
+    const text = releases.join("\n");
+    sendMessage(text, mm_webhook, icon, username, channel);
 } catch (error) {
   core.setFailed(error.message);
 }
@@ -28,9 +30,8 @@ function preparePayload(payload){
     const paths_released = JSON.parse(payload['paths_released']);
     let releases = [];
     for(const path of paths_released) {
-        const version = payload[`${path}--version`];
         const body = payload[`${path}--body`];
-        const text = `${path} ${version} \n ${body}`;
+        const text = `\n # ${path} \n ${body} \n`;
         releases.push(text);
     } 
     return releases;
@@ -50,12 +51,9 @@ function sendMessage(text, webhook, icon, username, channel) {
         data.channel = channel;
     }
 
-    fetch(webhook, {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'}, 
-        body: JSON.stringify(data)
-      }).then(res => {
-        console.log("Request complete! response:", res);
-      }
-    );
+    axios.post(webhook, data)
+    .then((_) => {
+    }).catch((err) => {
+        throw Error(err);
+    });
 }
