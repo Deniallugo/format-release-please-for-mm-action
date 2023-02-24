@@ -1,0 +1,23 @@
+name: 'Format Release Please for MatterMost messages'
+description: 'Format Release Please for MatterMost messages'
+inputs:
+  release-please-output:
+    description: 'Release please output'
+    required: true
+  MATTERMOST_WEBHOOK_URL: 
+    description: 'The Mattermost Incoming Webhook'
+    required: true
+  
+  MATTERMOST_CHANNEL: 
+    description: 'The name of the channel you want to post, by default will post in the channel that was setup in the webhook creation'
+    required: false 
+  MATTERMOST_USERNAME: 
+    description: 'The name of the sender of the message. ie, "GitHubAction"'
+    required: false 
+  MATTERMOST_ICON: 
+    description: 'User/Bot icon shown with Mattermost message'
+    required: false 
+runs:
+  using: 'node16'
+  main: 'index.js'
+
