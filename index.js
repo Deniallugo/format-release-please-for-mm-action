@@ -27,14 +27,28 @@ try {
 
 
 function preparePayload(payload) {
-    const paths_released = JSON.parse(payload['paths_released']); // Parse as JSON here
     let releases = [];
-    for (const path of paths_released) {
-        const body = payload[`${path}--body`];
-        const slackifiedBody = slackifyMarkdown(body); // convert markdown to Slack format
-        const text = `*${path}*\n\n${slackifiedBody}\n`;
+
+    // Handle the case where body is directly under the root of the payload
+    if (payload.body) {
+        const slackifiedBody = slackifyMarkdown(payload.body);
+        const text = `*${payload.name}*\n\n${slackifiedBody}\n`;
         releases.push(text);
     }
+
+    // Handle the case where bodies are associated with specific paths
+    if (payload.paths_released) {
+        const paths_released = JSON.parse(payload['paths_released']); // Parse as JSON here
+        for (const path of paths_released) {
+            const body = payload[`${path}--body`];
+            if (body) {
+                const slackifiedBody = slackifyMarkdown(body); // Convert markdown to Slack format
+                const text = `*${path}*\n\n${slackifiedBody}\n`;
+                releases.push(text);
+            }
+        }
+    }
+
     return releases;
 }
 
